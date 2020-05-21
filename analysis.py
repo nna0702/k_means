@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
     # Implement the clusters through iterations
 
-    colors = [(214, 39, 40), (23, 190, 207)]
+    colors = [(214, 39, 40), (23, 190, 207), (148, 0, 211), (128, 128, 0), (165, 42, 42)]
     colors = [get_rgb(color) for color in colors]
 
     iteration = 0

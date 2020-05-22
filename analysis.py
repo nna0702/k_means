@@ -1,9 +1,10 @@
-import pandas as pd
+# import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-import argparse
+
+# import argparse
 
 plt.style.use("default")
 plt.rcParams["font.sans-serif"] = "Arial"
@@ -172,79 +173,62 @@ def get_rgb(color):
     return color
 
 
-if __name__ == "__main__":
-
-    # Import data
-    data = pd.read_csv("faithful.csv")
-
-    # Remove first column
-    data = data.drop(data.columns[0], axis=1)
-
-    # Normalize features
-    for column in data.columns:
-        data[column] = normalization(data[column])
-
-    # Explotary plot
+def plot_exploratory(data):
     fig, ax = plt.subplots(1, 1)
+
     eruption = data["eruptions"]
     waiting = data["waiting"]
+
     ax.scatter(eruption, waiting, color=get_rgb([124, 252, 0]))
+
+    # x-axis
     ax.set_xlabel("Duration of the eruption (in mins)")
     ax.xaxis.set_tick_params(direction="in")
+
+    # y axis
     ax.set_ylabel("Waititing times between eruptions (in mins)")
     ax.yaxis.set_tick_params(direction="in")
+
+    # Title
     ax.set_title("Exploratory scatterplot")
+
     sns.despine(ax=ax)
+
     fig.tight_layout()
-    path = "plots/explotary.png"
+    path = "plots/exploratory.png"
     fig.savefig(path, bbox_inches="tight")
     print("Saved to {}".format(path))
 
-    # Set no. of of clusters
-    # K = 2
 
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--K", type=int, default=2, help=" ")
-    args = parser.parse_args()
+def plot_initialization(data, K, centroid_list):
 
-    # Randomly initialize K points
-    centroid_list = initialize(data, args.K)
-
-    # Convert data into array
-    data = data.to_numpy()
-
-    # Plot first initialization
     fig, ax = plt.subplots(1, 1)
+
     plot_list = plot_coordinate(data)
+
     eruptions = plot_list[0]
     waiting = plot_list[1]
+
     ax.scatter(eruptions, waiting, color=get_rgb([124, 252, 0]))
+
     for centroid in centroid_list:
         plot_centroid = plot_coordinate([centroid])
         ax.scatter(plot_centroid[0], plot_centroid[1], color="black", marker="x", s=100)
+
+    # x-axis
     ax.set_xlabel("Duration of the eruption (in mins)")
     ax.xaxis.set_tick_params(direction="in")
+
+    # y axis
     ax.set_ylabel("Waititing times between eruptions (in mins)")
     ax.yaxis.set_tick_params(direction="in")
+
+    # Title
     ax.set_title("After initialization")
+
     sns.despine(ax=ax)
+
     fig.tight_layout()
-    path = "plots/after_initialization.png"
+    path = "plots/initialization.png"
     fig.savefig(path, bbox_inches="tight")
     print("Saved to {}".format(path))
-
-    # Implement the clusters through iterations
-
-    colors = [(214, 39, 40), (23, 190, 207), (148, 0, 211), (128, 128, 0), (165, 42, 42)]
-    colors = [get_rgb(color) for color in colors]
-
-    iteration = 0
-
-    while True:
-        iteration += 1
-        clusters = cluster_assignment(data, centroid_list, args.K)
-        centroid_list = new_centroid(clusters, centroid_list)
-        plot_iteration(iteration, clusters, centroid_list, args.K, colors)
-
-        if np.allclose(centroid_list[-(args.K * 2) : -args.K], centroid_list[-args.K :]):
-            break

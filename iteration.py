@@ -22,9 +22,11 @@ if __name__ == "__main__":
     for column in data.columns:
         data[column] = analysis.normalization(data[column])
 
-    # Set K (number of clusters)
+    # Set args
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--K", type=int, default=2, help=" ")
+    parser.add_argument("--K", type=int, default=2, help=" ")  # Number of clusters
+    parser.add_argument("--x", type=str, default="waiting", help=" ")  # Variable x in case of 2D
+    parser.add_argument("--y", type=str, default="eruptions", help=" ")  # Variable y in case of 2D
     args = parser.parse_args()
 
     # Randomly initialize K points
@@ -33,24 +35,29 @@ if __name__ == "__main__":
     # Convert data into array
     data_array = data.to_numpy()
 
-    # Plot exploratory data
-    analysis.plot_exploratory(data)
+    # Produce plots for 2D
+    if len(data.columns) == 2:
 
-    # Plot data with initialization
-    analysis.plot_initialization(data_array, args.K, centroid_list)
+        # Plot exploratory data
+        analysis.plot_exploratory(data_array, args.x, args.y)
 
-    # Implement the clusters through iterations
+        # Plot data with initialization
+        analysis.plot_initialization(data_array, args.K, centroid_list, args.x, args.y)
 
-    colors = [(214, 39, 40), (23, 190, 207), (148, 0, 211), (128, 128, 0), (165, 42, 42)]
-    colors = [analysis.get_rgb(color) for color in colors]
+        # Implement the clusters through iterations
 
-    iteration = 0
+        colors = [(214, 39, 40), (23, 190, 207), (148, 0, 211), (128, 128, 0), (165, 42, 42)]
+        colors = [analysis.get_rgb(color) for color in colors]
 
-    while True:
-        iteration += 1
-        clusters = analysis.cluster_assignment(data_array, centroid_list, args.K)
-        centroid_list = analysis.new_centroid(clusters, centroid_list)
-        analysis.plot_iteration(iteration, clusters, centroid_list, args.K, colors)
+        iteration = 0
 
-        if np.allclose(centroid_list[-(args.K * 2) : -args.K], centroid_list[-args.K :]):
-            break
+        while True:
+            iteration += 1
+            clusters = analysis.cluster_assignment(data_array, centroid_list, args.K)
+            centroid_list = analysis.new_centroid(clusters, centroid_list)
+            analysis.plot_iteration(
+                iteration, clusters, centroid_list, args.K, colors, args.x, args.y,
+            )
+
+            if np.allclose(centroid_list[-(args.K * 2) : -args.K], centroid_list[-args.K :]):
+                break

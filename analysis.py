@@ -44,6 +44,9 @@ def initialize(data, K):
 def distance(x, y):
     """
     calculates the distance between x and y
+
+    Args:
+        x, y: np arrays
     """
     return math.sqrt(np.sum((x - y) ** 2))
 
@@ -105,20 +108,20 @@ def new_centroid(clusters, centroid_list):
 
 def plot_coordinate(coordinate_list):
     """
-    returns a list of K arrays for eruptions and waiting time from centroid list
+    returns a list of K arrays for variables x and y from centroid list
 
-    args:
+    Args:
         coordinate_list: list of np array
 
     return: list of np array
     """
-    eruptions = [coordinate[0] for coordinate in coordinate_list]
-    waiting = [coordinate[1] for coordinate in coordinate_list]
+    variable_x = [coordinate[0] for coordinate in coordinate_list]
+    variable_y = [coordinate[1] for coordinate in coordinate_list]
 
-    return eruptions, waiting
+    return variable_x, variable_y
 
 
-def plot_iteration(iteration, clusters, centroid_list, K, colors):
+def plot_iteration(iteration, clusters, centroid_list, K, colors, label_x, label_y):
     """
     plot the clustering for each iteration
 
@@ -128,6 +131,8 @@ def plot_iteration(iteration, clusters, centroid_list, K, colors):
         centroid_list: list of np arrays
         K: integer
         colors: list (of colors corresponding to cluster's centroid)
+        label_x: string
+        label_y: string
     """
 
     fig, ax = plt.subplots(1, 1)
@@ -135,19 +140,19 @@ def plot_iteration(iteration, clusters, centroid_list, K, colors):
     for cluster, color, centroid in zip(clusters, colors, centroid_list[-K:]):
         plot_list = plot_coordinate(cluster)
 
-        eruptions = plot_list[0]
-        waiting = plot_list[1]
-        ax.scatter(eruptions, waiting, color=color)
+        variable_x = plot_list[0]
+        variable_y = plot_list[1]
+        ax.scatter(variable_x, variable_y, color=color)
 
         plot_centroid = plot_coordinate([centroid])
         ax.scatter(plot_centroid[0], plot_centroid[1], color="black", marker="x", s=100)
 
     # x-axis
-    ax.set_xlabel("Duration of the eruption (in mins)")
+    ax.set_xlabel(label_x)
     ax.xaxis.set_tick_params(direction="in")
 
     # y axis
-    ax.set_ylabel("Waititing times between eruptions (in mins)")
+    ax.set_ylabel(label_y)
     ax.yaxis.set_tick_params(direction="in")
 
     # Title
@@ -170,20 +175,32 @@ def get_rgb(color):
     return color
 
 
-def plot_exploratory(data):
+def plot_exploratory(data, label_x, label_y):
+
+    """
+    plots the initial data for exploration
+
+    Args:
+        data: np arrays
+        label_x: string
+        label_y: string
+    """
+
     fig, ax = plt.subplots(1, 1)
 
-    eruption = data["eruptions"]
-    waiting = data["waiting"]
+    plot_list = plot_coordinate(data)
 
-    ax.scatter(eruption, waiting, color=get_rgb([124, 252, 0]))
+    variable_x = plot_list[0]
+    variable_y = plot_list[1]
+
+    ax.scatter(variable_x, variable_y, color=get_rgb([124, 252, 0]))
 
     # x-axis
-    ax.set_xlabel("Duration of the eruption (in mins)")
+    ax.set_xlabel(label_x)
     ax.xaxis.set_tick_params(direction="in")
 
     # y axis
-    ax.set_ylabel("Waititing times between eruptions (in mins)")
+    ax.set_ylabel(label_y)
     ax.yaxis.set_tick_params(direction="in")
 
     # Title
@@ -197,27 +214,37 @@ def plot_exploratory(data):
     print("Saved to {}".format(path))
 
 
-def plot_initialization(data, K, centroid_list):
+def plot_initialization(data, K, centroid_list, label_x, label_y):
 
+    """
+    plots the data with randomly initialized points
+
+    Args:
+        data: panda dataframe
+        K: integer
+        centroid_list: list of np arrays
+        label_x: string
+        label_y: string
+    """
     fig, ax = plt.subplots(1, 1)
 
     plot_list = plot_coordinate(data)
 
-    eruptions = plot_list[0]
-    waiting = plot_list[1]
+    variable_x = plot_list[0]
+    variable_y = plot_list[1]
 
-    ax.scatter(eruptions, waiting, color=get_rgb([124, 252, 0]))
+    ax.scatter(variable_x, variable_y, color=get_rgb([124, 252, 0]))
 
     for centroid in centroid_list:
         plot_centroid = plot_coordinate([centroid])
         ax.scatter(plot_centroid[0], plot_centroid[1], color="black", marker="x", s=100)
 
     # x-axis
-    ax.set_xlabel("Duration of the eruption (in mins)")
+    ax.set_xlabel(label_x)
     ax.xaxis.set_tick_params(direction="in")
 
     # y axis
-    ax.set_ylabel("Waititing times between eruptions (in mins)")
+    ax.set_ylabel(label_y)
     ax.yaxis.set_tick_params(direction="in")
 
     # Title

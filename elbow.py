@@ -42,6 +42,36 @@ def cost_function(final_centroid, clusters, K):
     return 1 / len(distance_list) * sum(distance_list)
 
 
+def plot_elbow(num_cluster, cost):
+
+    """
+    plots the cost function by number of clusters
+
+    Args:
+        num_cluster: integer
+        cost: list
+    """
+
+    fig, ax = plt.subplots(1, 1)
+
+    ax.plot(num_cluster, cost, marker="o")
+
+    ax.set_xlabel("Number of clusters")
+    ax.set_xticks(num_cluster)
+    ax.xaxis.set_tick_params(direction="in")
+
+    ax.set_ylabel("Cost")
+    ax.yaxis.set_tick_params(direction="in")
+    ax.set_title("Elbow method")
+
+    sns.despine(ax=ax)
+
+    fig.tight_layout()
+    path = "plots/elbow.png"
+    fig.savefig(path, bbox_inches="tight")
+    print("Saved to {}".format(path))
+
+
 if __name__ == "__main__":
 
     # Import data
@@ -68,22 +98,5 @@ if __name__ == "__main__":
         final_centroid, clusters = centroid_iteration(data_array, centroid_list, K)
         cost.append(cost_function(final_centroid, clusters, K))
 
-    # Plot the elbow
-    fig, ax = plt.subplots(1, 1)
-
-    ax.plot(num_cluster, cost, marker="o")
-
-    ax.set_xlabel("Number of clusters")
-    ax.set_xticks(num_cluster)
-    ax.xaxis.set_tick_params(direction="in")
-
-    ax.set_ylabel("Cost")
-    ax.yaxis.set_tick_params(direction="in")
-    ax.set_title("Elbow method")
-
-    sns.despine(ax=ax)
-
-    fig.tight_layout()
-    path = "plots/elbow.png"
-    fig.savefig(path, bbox_inches="tight")
-    print("Saved to {}".format(path))
+    # Plot elbow
+    plot_elbow(num_cluster, cost)

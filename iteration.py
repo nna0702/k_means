@@ -30,6 +30,7 @@ def export_table(clusters):
 
 
 if __name__ == "__main__":
+
     # Remove old files
     for filename in os.listdir("plots/"):
         if "iteration" in filename:
@@ -38,7 +39,7 @@ if __name__ == "__main__":
             print(f"Deleted {path}")
 
     # Import data
-    data = pd.read_csv("faithful.csv")
+    data = pd.read_csv("data/faithful.csv")
 
     # Remove first column
     data = data.drop(data.columns[0], axis=1)

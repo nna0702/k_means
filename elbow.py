@@ -75,7 +75,7 @@ def plot_elbow(num_cluster, cost):
 if __name__ == "__main__":
 
     # Import data
-    data = pd.read_csv("faithful.csv")
+    data = pd.read_csv("data/faithful.csv")
 
     # Remove first column
     data = data.drop(data.columns[0], axis=1)

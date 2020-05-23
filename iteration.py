@@ -4,6 +4,31 @@ import numpy as np
 import argparse
 import os
 
+
+def export_table(clusters):
+
+    # Convert clusters into a data frame
+    cluster_list = []
+    for cluster in clusters:
+        cluster_list.append(pd.DataFrame(cluster))
+    output = pd.concat([frame for frame in cluster_list], ignore_index=True)
+
+    # Create a cluster column
+    final_cluster = []
+    cluster_type = 0
+
+    for cluster in clusters:
+        cluster_type += 1
+        final_cluster = final_cluster + [cluster_type] * len(cluster)
+
+    # Add the cluster column to data frame
+    output["final_cluster"] = pd.Series(final_cluster)
+
+    # Save the table
+    output.to_csv("outputs/output.csv")
+    print("Saved output.csv to outputs")
+
+
 if __name__ == "__main__":
     # Remove old files
     for filename in os.listdir("plots/"):
@@ -44,20 +69,31 @@ if __name__ == "__main__":
         # Plot data with initialization
         analysis.plot_initialization(data_array, args.K, centroid_list, args.x, args.y)
 
-        # Implement the clusters through iterations
+    # Find the clusters through iterations
 
-        colors = [(214, 39, 40), (23, 190, 207), (148, 0, 211), (128, 128, 0), (165, 42, 42)]
-        colors = [analysis.get_rgb(color) for color in colors]
+    iteration = 0
 
-        iteration = 0
+    while True:
+        iteration += 1
+        clusters = analysis.cluster_assignment(data_array, centroid_list, args.K)
+        centroid_list = analysis.new_centroid(clusters, centroid_list)
 
-        while True:
-            iteration += 1
-            clusters = analysis.cluster_assignment(data_array, centroid_list, args.K)
-            centroid_list = analysis.new_centroid(clusters, centroid_list)
+        if len(data.columns) == 2:
+
+            colors = [(214, 39, 40), (23, 190, 207), (148, 0, 211), (128, 128, 0), (165, 42, 42)]
+            colors = [analysis.get_rgb(color) for color in colors]
+
             analysis.plot_iteration(
                 iteration, clusters, centroid_list, args.K, colors, args.x, args.y,
             )
 
             if np.allclose(centroid_list[-(args.K * 2) : -args.K], centroid_list[-args.K :]):
                 break
+
+        else:
+
+            if np.allclose(centroid_list[-(args.K * 2) : -args.K], centroid_list[-args.K :]):
+                break
+
+    # Table output
+    export_table(clusters)

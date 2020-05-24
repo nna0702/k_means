@@ -5,13 +5,27 @@ import argparse
 import os
 
 
-def export_table(clusters):
+def export_table(clusters, data, centroid_list, K, file_name):
+
+    """
+    exports table output with clusters for each observation
+
+    Args:
+        clusters: list of np arrays
+        data: pandas data frame
+        centroid_list: list of np arrays
+        K: integer
+        file_name: string
+
+    Returns: csv file
+    """
 
     # Convert clusters into a data frame
     cluster_list = []
     for cluster in clusters:
         cluster_list.append(pd.DataFrame(cluster))
     output = pd.concat([frame for frame in cluster_list], ignore_index=True)
+    output.columns = data.columns
 
     # Create a cluster column
     final_cluster = []
@@ -24,9 +38,43 @@ def export_table(clusters):
     # Add the cluster column to data frame
     output["final_cluster"] = pd.Series(final_cluster)
 
+    # Add centroids to the data frame
+    final_centroid = centroid_list[-K:]
+    final_centroid = pd.DataFrame(final_centroid)
+    final_centroid.columns = [column + " centroid" for column in data.columns]
+    final_centroid["final_cluster"] = pd.Series(list(range(1, K + 1)))
+
+    # Merge data frames
+    output = pd.merge(output, final_centroid, how="left")
+
     # Save the table
-    output.to_csv("outputs/output.csv")
-    print("Saved output.csv to outputs")
+    output.to_csv("outputs/" + file_name)
+    print("Saved csv to outputs")
+
+    return output
+
+
+def find_cluster(new_point, centroid_list, K):
+
+    """
+    finds the cluster for a new point outside the dataset
+
+    Args: 
+        new_point: np array
+        centroid_list: list of np arrays
+        K: integer
+     """
+
+    # Calculate distance between new point and each of the final centroids
+    distance_list = []
+    final_centroid = centroid_list[-K:]
+    for centroid in final_centroid:
+        distance_list.append(analysis.distance(new_point, centroid))
+
+    # Find the centroids with the minimum distance from the new point
+    idx = distance_list.index(min(distance_list))
+
+    print("Cluster: " + str(idx + 1))
 
 
 if __name__ == "__main__":
@@ -97,4 +145,9 @@ if __name__ == "__main__":
                 break
 
     # Table output
-    export_table(clusters)
+    export_table(clusters, data, centroid_list, args.K, "faithful_output.csv")
+
+    # Find cluster of a new point
+    new_point = np.array([-0.5, 0.5])
+    print("New point " + str(new_point))
+    find_cluster(new_point, centroid_list, args.K)

@@ -80,10 +80,6 @@ if __name__ == "__main__":
     # Remove first column
     data = data.drop(data.columns[0], axis=1)
 
-    # Normalize features
-    for column in data.columns:
-        data[column] = analysis.normalization(data[column])
-
     # Convert data into array
     data_array = data.to_numpy()
 

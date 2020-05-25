@@ -42,7 +42,7 @@ def cost_function(final_centroid, clusters, K):
     return 1 / len(distance_list) * sum(distance_list)
 
 
-def plot_elbow(num_cluster, cost):
+def plot_elbow(num_cluster, cost, file_name):
 
     """
     plots the cost function by number of clusters
@@ -50,6 +50,7 @@ def plot_elbow(num_cluster, cost):
     Args:
         num_cluster: integer
         cost: list
+        file_name: string
     """
 
     fig, ax = plt.subplots(1, 1)
@@ -67,7 +68,7 @@ def plot_elbow(num_cluster, cost):
     sns.despine(ax=ax)
 
     fig.tight_layout()
-    path = "plots/elbow.png"
+    path = "plots/elbow_" + file_name + ".png"
     fig.savefig(path, bbox_inches="tight")
     print("Saved to {}".format(path))
 
@@ -95,4 +96,4 @@ if __name__ == "__main__":
         cost.append(cost_function(final_centroid, clusters, K))
 
     # Plot elbow
-    plot_elbow(num_cluster, cost)
+    plot_elbow(num_cluster, cost, "faithful")
